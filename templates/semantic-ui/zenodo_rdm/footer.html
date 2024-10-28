@@ -1,0 +1,135 @@
+{#
+# This file is part of Zenodo.
+# Copyright (C) 2015-2021 CERN.
+#
+# Zenodo is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# Zenodo is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Zenodo; if not, write to the
+# Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA 02111-1307, USA.
+#
+# In applying this license, CERN does not
+# waive the privileges and immunities granted to it by virtue of its status
+# as an Intergovernmental Organization or submit itself to any jurisdiction.
+-#}
+
+{%- extends "invenio_app_rdm/footer.html" %}
+
+  <div class="footer-top">
+    <div class="ui container app-rdm-footer">
+{% block footer_content %}
+{%- block footer_top_left %}
+<div class="ui equal width stackable grid zenodo-footer">
+  <div class="column">
+    <h2 class="ui inverted tiny header">{{_('About')}}</h2>
+    <ul class="ui inverted link list">
+      <li class="item">
+        <a href="https://about.zenodo.org">{{_('About')}}</a>
+      </li>
+      <li class="item">
+        <a href="https://about.zenodo.org/policies">{{_('Policies')}}</a>
+      </li>
+      <li class="item">
+        <a href="https://about.zenodo.org/infrastructure">{{_('Infrastructure')}}</a>
+      </li>
+      <li class="item">
+        <a href="https://about.zenodo.org/principles">{{_('Principles')}}</a>
+      </li>
+      <li class="item">
+        <a href="https://about.zenodo.org/projects/">{{_('Projects')}}</a>
+      </li>
+      <li class="item">
+        <a href="https://about.zenodo.org/roadmap/">{{ _('Roadmap') }}</a>
+      </li>
+      <li class="item">
+        <a href="https://about.zenodo.org/contact">{{_('Contact')}}</a>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="ui inverted tiny header">{{_('Blog')}}</h2>
+    <ul class="ui inverted link list">
+      <li class="item">
+        <a href="https://blog.zenodo.org">{{_('Blog')}}</a>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="ui inverted tiny header">{{_('Help')}}</h2>
+    <ul class="ui inverted link list">
+      <li class="item">
+        <a href="https://help.zenodo.org">{{_('FAQ')}}</a>
+      </li>
+      <li class="item">
+        <a href="https://help.zenodo.org/docs/">{{ _('Docs') }}</a>
+      </li>
+      <li class="item">
+        <a href="https://help.zenodo.org/guides/">{{ _('Guides') }}</a>
+      </li>
+      <li class="item">
+        <a href="https://zenodo.org/support">{{ _('Support') }}</a>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="ui inverted tiny header">{{_('Developers')}}</h2>
+    <ul class="ui inverted link list">
+      <li class="item">
+        <a href="https://developers.zenodo.org">{{_('REST API')}}</a>
+      </li>
+      <li class="item">
+        <a href="https://developers.zenodo.org#oai-pmh">{{_('OAI-PMH')}}</a>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="ui inverted tiny header">{{_('Contribute')}}</h2>
+    <ul class="ui inverted link list">
+      <li class="item">
+        <a href="https://github.com/zenodo/zenodo-rdm">
+          <i class="icon external" aria-hidden="true"></i>
+          {{_('GitHub')}}
+        </a>
+      </li>
+      <li class="item">
+        <a href="/donate">
+          <i class="icon external" aria-hidden="true"></i>
+          {{_('Donate')}}
+        </a>
+      </li>
+    </ul>
+  </div>
+{%- endblock footer_top_left %}
+
+{%- block footer_top_right %}
+  <h2 class="ui inverted tiny header">{{_('Funded by')}}</h2>
+  <ul class="ui horizontal link list">
+    <li class="item">
+      <a href="https://home.cern" aria-label="CERN">
+        <img src="{{ url_for('static', filename='images/cern.png') }}" width="60" height="60" alt="" />
+      </a>
+    </li>
+    <li class="item">
+      <a href="https://www.openaire.eu" aria-label="OpenAIRE">
+        <img src="{{ url_for('static', filename='images/openaire.png') }}" width="60" height="60" alt="" />
+      </a>
+    </li>
+    <li class="item">
+      <a href="https://commission.europa.eu/index_en" aria-label="European Commission">
+        <img src="{{ url_for('static', filename='images/eu.png') }}" width="88" height="60" alt="" />
+      </a>
+    </li>
+  </ul>
+  {%- endblock footer_top_right %}
+</div>
+{% endblock footer_content %}
+    </div></div>

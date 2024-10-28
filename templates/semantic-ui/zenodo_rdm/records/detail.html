@@ -1,0 +1,132 @@
+{#
+  Copyright (C) 2022 CERN.
+
+  Invenio RDM Records is free software; you can redistribute it and/or modify
+  it under the terms of the MIT License; see LICENSE file for more details.
+#}
+
+
+{%- extends "invenio_app_rdm/records/detail.html" %}
+
+{%- set citations_enabled = config.ZENODO_RECORDS_UI_CITATIONS_ENABLE %}
+{%- set isBlrRecord = record | is_blr_related_record %}
+
+{# Unverified records should not be indexed by robots (and display the reason for admins) #}
+{%- if record is not verified_record -%}
+  {% set meta_robot_tags = [
+    {
+      "name": "robots",
+      "content": "noindex, nofollow",
+      "data-reason": ("Record is not verified" if permissions.can_moderate),
+    }
+  ] %}
+{%- endif -%}
+
+{%- block record_files -%}
+  {# record has files BUT passed files are empty. This happens when we display are request. #}
+  {%- if record.files.enabled -%}
+    <section
+      id="record-files" class="rel-mt-2 rel-mb-3"
+      aria-label="{{ _('Files') }}"
+    >
+      {%- if permissions.can_read_files -%}
+        {# record has files AND user has permission to see files #}
+        {%- set files = files | order_entries | selectattr("status", "==", "completed") | list %}
+        {%- if files|length > 0 -%}
+          <h2 id="files-heading">{{ _('Files') }}</h2>
+          {%- if files|has_previewable_files -%}
+            {%-set preview_file = files|select_preview_file(default_preview=record.files.default_preview) %}
+            {{ preview_file_box(preview_file, record.id, is_preview, record, include_deleted) }}
+          {%- endif -%}
+          {{ file_list_box(files, record.id, is_preview, include_deleted, record, permissions) }}
+        {%- endif -%}
+      {% else %}
+        {# record has files BUT user does not have permission to see files #}
+        <div
+          class="ui accordion panel mb-10 {{ record.ui.access_status.id }}"
+          href="#collapsablePreview"
+        >
+          <h3 class="active title panel-heading {{ record.ui.access_status.id }} m-0">
+            <div role="button" id="files-preview-accordion-trigger" aria-controls="collapsablePreview" aria-expanded="true" tabindex="0" class="trigger">
+              {{ _("Files") }}
+              <i class="angle right icon" aria-hidden="true"></i>
+            </div>
+          </h3>
+          <div role="region" id="collapsablePreview" aria-labelledby="files-preview-accordion-trigger" class="active content pt-0">
+            <div class="ui {{ record.ui.access_status.message_class }} message file-box-message rel-pl-1 rel-pr-1">
+              <i class="ui {{ record.ui.access_status.icon }} icon" aria-hidden="true"></i>
+              <h4 class="inline">{{ record.ui.access_status.title_l10n }}</h4>
+              <p>{{ record.ui.access_status.description_l10n }}</p>
+
+              {% if record.access.embargo.reason %}
+                <p>{{ _("Reason") }}: {{ record.access.embargo.reason }}</p>
+              {% endif %}
+              {% block record_files_access_request %}
+                {{ super() }}
+              {% endblock record_files_access_request %}
+            </div>
+          </div>
+        </div>
+      {%- endif %}
+
+    </section>
+  {%- endif %}
+{%- endblock record_files -%}
+
+
+{# Additional details #}
+{%- block record_details -%}
+
+  {% if isBlrRecord %}
+    {# BLR Related works #}
+    <h2>Linked records</h2>
+    <section
+      id="blr-search"
+      data-blr-endpoint="/api/records"
+      data-record-doi='{{ record.pids.doi.identifier | tojson }}'
+      data-resource-type='{{ record.metadata.resource_type.title.en | tojson }}'
+      data-blr-id='{{ record.expanded.parent.communities.default.id | tojson }}'
+    >
+      <div class="ui segment">
+        <div class="ui fluid placeholder">
+          <div class="image header">
+            <div class="long line"></div>
+            <div class="line"></div>
+          </div>
+          <div class="image header">
+            <div class="long line"></div>
+            <div class="line"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  <section id="additional-details" class="rel-mt-2" aria-label="{{ _('Additional record details') }}">
+    {%- include "zenodo_rdm/records/details/details.html" %}
+  </section>
+{%- endblock record_details -%}
+
+
+{%- block record_footer -%}
+  {% if citations_enabled and not is_preview %}
+    {% set parent_pids = record.parent.pids or record.pids %}
+    <section
+      id="citations-search"
+      data-record-pids='{{ record.pids | tojson }}'
+      data-record-parent-pids='{{ parent_pids | tojson }}'
+      data-citations-endpoint="{{config.ZENODO_RECORDS_UI_CITATIONS_ENDPOINT}}"
+      aria-label="{{ _('Record citations')}}"
+      class="rel-mb-1"
+    >
+    </section>
+  {% endif %}
+{%- endblock record_footer -%}
+
+{% block javascript %}
+  {{super()}}
+  {{ webpack['zenodo-rdm-citations.js'] }}
+  {% if isBlrRecord %}
+    {{ webpack['zenodo-rdm-blr-search.js'] }}
+  {% endif %}
+{% endblock javascript %}

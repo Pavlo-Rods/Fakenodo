@@ -1,0 +1,118 @@
+version: "2.2"
+services:
+  app:
+    build:
+      context: ./
+      args:
+        - ENVIRONMENT=DEV
+    image: zenodo
+    environment:
+      - "INVENIO_ACCOUNTS_SESSION_REDIS_URL=redis://cache:6379/1"
+      - "INVENIO_COMMUNITIES_IDENTITIES_CACHE_REDIS_URL=redis://cache:6379/1"
+      - "INVENIO_BROKER_URL=amqp://guest:guest@mq:5672/"
+      - "INVENIO_CACHE_REDIS_URL=redis://cache:6379/0"
+      - "INVENIO_CACHE_TYPE=redis"
+      - "INVENIO_CELERY_BROKER_URL=amqp://guest:guest@mq:5672/"
+      - "INVENIO_CELERY_RESULT_BACKEND=redis://cache:6379/2"
+      - "INVENIO_SEARCH_HOSTS=['search:9200']"
+      - "INVENIO_SECRET_KEY=CHANGE_ME"
+      - "INVENIO_SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://zenodo:zenodo@db:5432/zenodo"
+      - "INVENIO_WSGI_PROXIES=2"
+      - "INVENIO_RATELIMIT_STORAGE_URL=redis://cache:6379/3"
+      - "INVENIO_SITE_UI_URL=https://127.0.0.1"
+      - "INVENIO_SITE_API_URL=https://127.0.0.1/api"
+  frontend:
+    build: ./docker/nginx/
+    image: zenodo-frontend
+    restart: "unless-stopped"
+    ports:
+      - "80"
+      - "443"
+  cache:
+    image: registry.cern.ch/docker.io/library/redis
+    restart: "unless-stopped"
+    read_only: true
+    ports:
+      - "6379:6379"
+  db:
+    image: registry.cern.ch/docker.io/library/postgres:12.4
+    restart: "unless-stopped"
+    environment:
+      - "POSTGRES_USER=zenodo"
+      - "POSTGRES_PASSWORD=zenodo"
+      - "POSTGRES_DB=zenodo"
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: registry.cern.ch/docker.io/dpage/pgadmin4:7.7
+    restart: "unless-stopped"
+    ports:
+      - "5050:80"
+      - "5051:443"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "info@zenodo.org"
+      PGADMIN_DEFAULT_PASSWORD: "zenodo"
+    volumes:
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json
+  pgbouncer:
+    image: registry.cern.ch/pgbouncer/pgbouncer:1.19.1
+    restart: "unless-stopped"
+    ports:
+      - "6432:6432"
+    volumes:
+      - ./docker/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini
+      - ./docker/pgbouncer/userlist.txt:/etc/pgbouncer/userlist.txt
+  mq:
+    image: registry.cern.ch/docker.io/library/rabbitmq:3-management
+    restart: "unless-stopped"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  search:
+    image: registry.cern.ch/docker.io/opensearchproject/opensearch:2.15.0
+    restart: "unless-stopped"
+    environment:
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - "DISABLE_SECURITY_PLUGIN=true"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "localhost:9200/_cluster/health?wait_for_status=green",
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    mem_limit: 2g
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  opensearch-dashboards:
+    image: registry.cern.ch/docker.io/opensearchproject/opensearch-dashboards:2.15.0
+    ports:
+      - "5601:5601"
+    expose:
+      - "5601"
+    environment:
+      - "OPENSEARCH_HOSTS=http://search:9200"
+      - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true"
+  iipserver:
+    image: registry.cern.ch/docker.io/iipsrv/iipsrv:latest
+    ports:
+      - "8080:80"
+      - "9000:9000"
+    expose:
+      - "8080"
+      - "9000"
+    environment:
+      - "CORS=*"
+      - "FILESYSTEM_PREFIX=/images/public"

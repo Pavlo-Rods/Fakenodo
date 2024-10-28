@@ -1,0 +1,42 @@
+/*
+ *   Copyright (C) 2021-2022 CERN.
+ *
+ * Invenio App RDM is free software; you can redistribute it and/or modify it
+ * under the terms of the MIT License; see LICENSE file for more details.
+ */
+
+// Colors
+@warningColor: #EB9419;
+@positiveColor: #3A833A;
+@negativeColor: #D33B36;
+@primaryColor: #2F6FA7;
+
+@lightTextColor: #696969;
+@invertedTextColor: #FFF;
+@invertedTextColorLight: #dbeaff;
+@mutedTextColor: #696969;
+@linkColor: @primaryColor;
+
+// Navbar
+@navbarBackgroundImage: linear-gradient(to right,#0047A8 0,#2BBCFF 100%);
+
+
+// Footer colors
+@footerLightColor: #0067c9;
+@footerDarkColor: #0047a8;
+@footerTextDarkColor: #E5F4FF;
+
+
+// Font weights
+@normal: 300;
+@semibold: 500;
+@bold: 700;
+
+@headerFontWeight: @normal;
+
+
+// Page headings
+@h1 : unit((36 / 14), rem);
+@h2 : unit((30 / 14), rem);
+@h3 : unit((24 / 14), rem);
+@h4 : unit((18 / 14), rem);

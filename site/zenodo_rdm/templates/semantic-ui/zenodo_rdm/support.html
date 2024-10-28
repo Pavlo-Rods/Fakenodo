@@ -1,0 +1,140 @@
+{%- extends "invenio_app_rdm/frontpage.html" %}
+
+{%- block page_header %}
+    {%- include "zenodo_rdm/header_frontpage.html" %}
+{%- endblock page_header %}
+
+
+{# Remove featured communities #}
+{%- block top_banner %}
+{%- endblock top_banner %}
+
+{%- set is_user_authenticated = current_user.is_authenticated %}
+{%- set userData = { 'email': "", 'full_name': "" } %}
+{%- if is_user_authenticated %}
+    <!-- Full name is not required -->
+    {%- set fullName = current_user.user_profile.full_name or "" %}
+    {%- set userData = { 'email': current_user.email, 'full_name': fullName } %}
+{%- endif %}
+
+{% block grid_section %}
+    <div id="contact-page" class="ui one column grid container rel-pt-3">
+        <div class="row">
+            <div class="sixteen wide mobile sixteen wide tablet ten wide computer column">
+                <div class="panel-body mt-5">
+                    <h2 class="ui header mb-10">Support</h2>
+
+<div class="ui icon message">
+  <i class="info circle icon"></i>
+  <div class="content">
+    <div class="header">
+      Before you contact us
+    </div>
+    <p>We appreciate that you search for answers to your questions in below linked documentation before you reach out to us.</p>
+  </div>
+</div>
+
+<div class="ui two stackable cards">
+  <div class="card">
+    <div class="content">
+      <div class="header"><a href="https://support.zenodo.org/help/en-gb">FAQ</a></div>
+      <div class="description">
+        Answers to all of the most <strong>frequently asked questions</strong> on our support line including e.g.
+        <ul>
+        <li>Account management</li>
+        <li>Creating and managing records</li>
+        <li>Review processes</li>
+        <li>Safe listing and usage statistics</li>
+        <li>Policy questions</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="content">
+      <div class="header"><a href="https://help.zenodo.org/">Help pages</a></div>
+      <div class="description">
+        Easy to follow <strong>step-by-step instructions</strong> for how to get started and use both easy and advanced Zenodo features including:
+        <ul>
+        <li>Uploading and managing records</li>
+        <li>Collaborating and sharing</li>
+        <li>Communities and membership management</li>
+        <li>Account and profiles</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="content">
+      <div class="header"><a href="https://about.zenodo.org/">About</a></div>
+      <div class="description">
+        General information about Zenodo, our infrastructure, projects, and policies including:
+        <ul>
+        <li><a href="https://about.zenodo.org/">About</a> Zenodo and our <a href="https://about.zenodo.org/infrastructure">infrastructure</a>.</li>
+        <li><a href="https://about.zenodo.org/policies/">General policies</a> and <a href="https://about.zenodo.org/terms/">terms of use</a>.</li>
+        <li><a href="https://about.zenodo.org/projects/">Projects</a> we participate in.</li>
+        <li><a href="https://developers.zenodo.org">Developer documentation</a> and detailed <a href="https://help.zenodo.org/guides/">guides</a> on NIH DMSPs and searching Zenodo.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="content">
+      <div class="header"><a href="https://openaire.eu/">Open science <i class="external alternate icon"></i></a> (by OpenAIRE)</div>
+      <div class="description">
+        OpenAIRE provides general guides/training on open science, Horizon Europe, research data management (RDM) and legal issues for researchers.
+        <ul>
+        <li><a href="https://www.openaire.eu/guides">Guides</a></li>
+        <li><a href="https://www.openaire.eu/support/webinars">Webinars</a></li>
+        <li><a href="https://www.openaire.eu/open-science-europe-overview">Open science in Europe</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="sixteen wide mobile sixteen wide tablet ten wide computer column">
+                <h3>Contact us</h3>
+                {%- if not is_user_authenticated %}
+                <div class="ui clearing info message">
+                <div class="ui header">
+                Log in
+                </div>
+                <a class="ui right floated button" href="{{url_for_security('login')}}"><i class="sign-in icon"></i> Log in</a>
+                <p>Please log into Zenodo if you have already have an account by clicking the button. This helps us resolve your requests faster and is required for certain types of requests.</p>
+                </div>
+                {%- endif %}
+                {% block root_section %}
+                    <div id="zenodo-rdm-support-root" class="panel-body"></div>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    {% block config %}
+        <div
+            id='zenodo-rdm-support-config'
+            data-user='{{ userData | tojson }}'
+            data-is-authenticated='{{ is_user_authenticated | tojson }}'
+            data-categories='{{ categories.values() | list | tojson }}'
+            data-system-info='{{ system_info | tojson }}'
+            data-max-file-size = '{{ config.SUPPORT_ATTACHMENT_MAX_SIZE }}';
+            data-description-min-length = '{{ config.SUPPORT_DESCRIPTION_MIN_LENGTH }}';
+            data-description-max-length = '{{ config.SUPPORT_DESCRIPTION_MAX_LENGTH }}';
+            data-api-endpoint = '{{ config.SUPPORT_ENDPOINT }}';
+        >
+        </div>
+    {% endblock %}
+{% endblock %}
+
+
+
+{% block javascript %}
+    {{ super() }}
+    {{ webpack['zenodo-rdm-support.js'] }}
+{% endblock %}

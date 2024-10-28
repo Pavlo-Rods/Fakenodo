@@ -1,0 +1,24 @@
+{#
+    Copyright (C) 2024 CERN.
+
+    ZenodoRDM is free software; you can redistribute it and/or modify it
+    under the terms of the MIT License; see LICENSE file for more details.
+#}
+
+{#- Template for when file doesn't exist or file cannot be previewed #}
+
+{%- extends config.PREVIEWER_ABSTRACT_TEMPLATE %}
+
+{% block panel %}
+
+<div class="iframe-container">
+    <h3 class="ui header">
+        <i class="eye outline slash icon"></i>
+        <div class="content">
+            {{_('We are unable to preview the image')}}
+            <div class="sub header">{{_('The image file is too big to be previewed.')}}</div>
+        </div>
+    </h3>
+</div>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+version: '2.2'
+services:
+  cache:
+    extends:
+      file: docker-services.yml
+      service: cache
+  db:
+    extends:
+      file: docker-services.yml
+      service: db
+  pgbouncer:
+    extends:
+      file: docker-services.yml
+      service: pgbouncer
+  mq:
+    extends:
+      file: docker-services.yml
+      service: mq
+  search:
+    extends:
+      file: docker-services.yml
+      service: search
+  opensearch-dashboards:
+    extends:
+      file: docker-services.yml
+      service: opensearch-dashboards
+  pgadmin:
+    extends:
+      file: docker-services.yml
+      service: pgadmin
+  iipserver:
+    extends:
+      file: docker-services.yml
+      service: iipserver
+    volumes:
+      - ${INSTANCE_PATH}/images:/images # INSTANCE_PATH must be defined in the environment (or .env file)
